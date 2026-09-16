@@ -23,19 +23,33 @@ def test_local_frontend_origin_is_allowed_by_cors() -> None:
     assert response.headers["access-control-allow-origin"] == "http://localhost:5173"
 
 
+def test_production_frontend_origin_is_allowed_by_cors() -> None:
+    response = client.options(
+        "/api/demo/plan",
+        headers={
+            "Origin": "https://dispatchdiff.vercel.app",
+            "Access-Control-Request-Method": "GET",
+        },
+    )
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == "https://dispatchdiff.vercel.app"
+
+
 def test_configured_frontend_origin_is_allowed_by_cors(monkeypatch) -> None:
-    monkeypatch.setenv("FRONTEND_ORIGIN", "https://dispatchdiff.vercel.app/")
+    monkeypatch.setenv("FRONTEND_ORIGIN", "https://dispatchdiff-preview.vercel.app/")
     configured_client = TestClient(create_app())
     response = configured_client.options(
         "/api/demo/plan",
         headers={
-            "Origin": "https://dispatchdiff.vercel.app",
+            "Origin": "https://dispatchdiff-preview.vercel.app",
             "Access-Control-Request-Method": "GET",
             "Access-Control-Request-Headers": "Content-Type",
         },
     )
     assert response.status_code == 200
-    assert response.headers["access-control-allow-origin"] == "https://dispatchdiff.vercel.app"
+    assert response.headers["access-control-allow-origin"] == (
+        "https://dispatchdiff-preview.vercel.app"
+    )
 
 
 def test_unrelated_origin_is_not_allowed_by_cors() -> None:

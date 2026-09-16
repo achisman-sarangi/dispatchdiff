@@ -7,7 +7,10 @@ from app.api.routes import router
 
 
 def create_app() -> FastAPI:
-    origins = ["http://localhost:5173"]
+    origins = [
+        "http://localhost:5173",
+        "https://dispatchdiff.vercel.app",
+    ]
     if frontend_origin := os.getenv("FRONTEND_ORIGIN", "").strip().rstrip("/"):
         if frontend_origin not in origins:
             origins.append(frontend_origin)
